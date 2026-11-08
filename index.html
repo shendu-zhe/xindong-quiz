@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#fff0f4">
+<title>测一测，TA 是不是也在偷偷喜欢你</title>
+<meta name="description" content="凭 10 个心动细节，匹配 TA 的真实心意。10 道题，约 1 分钟。">
+<style>
+  :root{
+    --pink:#ff5b7f;
+    --pink-d:#e83f66;
+    --ink:#221a1d;
+    --ink-2:#6b5b60;
+    --card:#ffffff;
+    --line:#f0dfe4;
+    --bg1:#fff1f5;
+    --bg2:#fffaf7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:linear-gradient(170deg,var(--bg1) 0%,var(--bg2) 55%,#fff 100%);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:480px;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));}
+  .screen{display:none;animation:fade .32s ease both}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ---------- 封面 ---------- */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;color:var(--pink-d);background:#ffe4eb;
+    padding:7px 14px;border-radius:999px;font-weight:600;letter-spacing:.02em;
+  }
+  h1{
+    font-size:31px;line-height:1.32;margin:20px 0 0;font-weight:800;letter-spacing:-.01em;
+  }
+  h1 em{font-style:normal;color:var(--pink);position:relative;white-space:nowrap}
+  h1 em::after{
+    content:"";position:absolute;left:0;right:0;bottom:2px;height:9px;
+    background:#ffd3de;border-radius:4px;z-index:-1;
+  }
+  .sub{margin:14px 0 0;font-size:16px;line-height:1.7;color:var(--ink-2)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0}
+  .chip{
+    font-size:13.5px;color:#8a5f6b;background:#fff;border:1px solid var(--line);
+    padding:8px 13px;border-radius:12px;box-shadow:0 2px 10px rgba(230,150,170,.06);
+  }
+  .chip b{color:var(--ink);font-weight:700}
+  .cta{
+    display:block;width:100%;border:0;cursor:pointer;
+    margin-top:30px;padding:18px 20px;border-radius:18px;
+    font-size:18px;font-weight:800;letter-spacing:.02em;color:#fff;
+    background:linear-gradient(135deg,#ff6f8e,#ff3f6e);
+    box-shadow:0 12px 26px rgba(255,80,120,.32);
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .cta:active{transform:translateY(2px) scale(.995);box-shadow:0 6px 16px rgba(255,80,120,.28)}
+  .tiny{margin:16px 0 0;text-align:center;font-size:12.5px;color:#b4a3a8;line-height:1.6}
+
+  /* ---------- 答题 ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--ink-2)}
+  .track{height:7px;background:#ffe3ea;border-radius:999px;margin:12px 0 30px;overflow:hidden}
+  .track > i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ffa9bf,#ff4f78);transition:width .35s cubic-bezier(.4,0,.2,1)}
+  .qnum{font-size:14px;font-weight:800;color:var(--pink);letter-spacing:.08em}
+  .qtext{font-size:23px;line-height:1.5;font-weight:800;margin:10px 0 26px;letter-spacing:-.01em}
+  .opts{display:flex;flex-direction:column;gap:12px}
+  .opt{
+    text-align:left;width:100%;cursor:pointer;
+    background:var(--card);border:1.5px solid #f6e6ea;border-radius:16px;
+    padding:17px 18px;font-size:16.5px;line-height:1.45;color:var(--ink);font-weight:500;
+    box-shadow:0 3px 14px rgba(220,140,160,.07);
+    transition:border-color .15s ease,transform .1s ease,background .15s ease;
+  }
+  .opt:active{transform:scale(.985);border-color:var(--pink);background:#fff6f8}
+  .opt.picked{border-color:var(--pink);background:#fff2f6}
+
+  /* ---------- 结果 ---------- */
+  .resLabel{font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:.16em}
+  .resName{font-size:34px;font-weight:900;line-height:1.24;margin:10px 0 8px;letter-spacing:-.02em}
+  .resName span{color:var(--pink)}
+  .resTag{font-size:16.5px;font-weight:700;color:#8a5f6b;line-height:1.6;margin:0}
+  .social{display:none;margin:10px 0 0;font-size:13.5px;color:var(--ink-2)}
+  .social b{color:var(--pink);font-weight:800}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin:20px 0 0;box-shadow:0 6px 22px rgba(220,140,160,.09)}
+  .card h3{margin:0 0 10px;font-size:14px;letter-spacing:.08em;color:var(--ink-2);font-weight:700}
+  .desc{margin:0;font-size:16px;line-height:1.82;color:#3b2f33}
+  .heat{display:flex;align-items:baseline;gap:8px}
+  .heat b{font-size:44px;font-weight:900;color:var(--pink);letter-spacing:-.02em;line-height:1}
+  .heat i{font-style:normal;font-size:14px;color:var(--ink-2)}
+  .bars{display:flex;flex-direction:column;gap:13px;margin-top:6px}
+  .bar .row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;color:#4a3b40}
+  .bar .row span:last-child{font-weight:800;color:var(--pink-d)}
+  .bar .bg{height:9px;background:#ffe7ee;border-radius:999px;overflow:hidden}
+  .bar .bg > i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ffb0c4,#ff4f78);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .btn2{
+    display:block;width:100%;border:1.5px solid var(--pink);cursor:pointer;margin-top:14px;
+    padding:15px;border-radius:16px;font-size:16px;font-weight:800;color:var(--pink);
+    background:#fff;transition:background .15s ease;
+  }
+  .btn2:active{background:#fff2f6}
+  .btnGhost{border-color:#ecdade;color:var(--ink-2)}
+  .foot{margin:22px 0 0;text-align:center;font-size:12px;color:#bba9ae;line-height:1.7}
+  .toast{
+    position:fixed;left:50%;bottom:38px;transform:translate(-50%,20px);
+    background:rgba(34,26,29,.92);color:#fff;font-size:14px;padding:11px 18px;border-radius:12px;
+    opacity:0;pointer-events:none;transition:.25s ease;z-index:9;
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section class="screen active" id="s-cover">
+    <div class="badge">✦ 10 道题 · 约 1 分钟</div>
+    <h1>测一测，TA 是不是也在<em>偷偷喜欢你</em></h1>
+    <p class="sub">凭你的 10 个心动细节，匹配 TA 的真实心意。<br>不用犹豫，凭第一直觉选。</p>
+    <div class="chips">
+      <div class="chip"><b>心动细节</b>｜每个举动都有答案</div>
+      <div class="chip"><b>聊天温度</b>｜回复速度藏着态度</div>
+      <div class="chip"><b>暧昧浓度</b>｜你们现在到哪一步</div>
+      <div class="chip"><b>心意解读</b>｜TA 心里到底怎么看你</div>
+    </div>
+    <button class="cta" id="start">开始测试 →</button>
+    <p class="tiny">纯本地计算 · 不收集任何信息<br>本测试仅供娱乐，不构成心理诊断</p>
+  </section>
+
+  <!-- 答题 -->
+  <section class="screen" id="s-quiz">
+    <div class="topbar">
+      <span id="qidx">第 1 / 10 题</span>
+      <span id="qpct">0%</span>
+    </div>
+    <div class="track"><i id="bar"></i></div>
+    <div class="qnum" id="qnum">Q1</div>
+    <h2 class="qtext" id="qtext">题目</h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="s-result">
+    <div class="resLabel">你的心动结果</div>
+    <h1 class="resName" id="rname">—</h1>
+    <p class="resTag" id="rtag"></p>
+    <p class="social" id="rsocial"></p>
+
+    <div class="card">
+      <h3>TA 的心意解读</h3>
+      <p class="desc" id="rdesc"></p>
+    </div>
+
+    <div class="card">
+      <h3>心动浓度</h3>
+      <div class="heat"><b id="rheat">0</b><i>%</i></div>
+      <div class="bars" id="rbars"></div>
+    </div>
+
+    <button class="btn2" id="share">复制结果，发给朋友 →</button>
+    <button class="btn2 btnGhost" id="again">再测一次</button>
+    <p class="foot">答案只在你手机里算，不上传任何信息<br>结果图个乐，别拿它替你做决定</p>
+  </section>
+
+</div>
+<div class="toast" id="toast">已复制</div>
+
+<script>
+/* ============================================================
+   1. 结果类型：name 名字 / tag 一句话 / desc 解读
+   ============================================================ */
+const TYPES = {
+  both: {
+    name: "双向奔赴型",
+    tag: "他没在等别人，他在等你先开口。",
+    desc: "你们的信号是对称的：你往前走一步，他就会接上。他不是没感觉，是怕先开口会吓到你。你们之间差的从来不是心意，是一句“要不我们试试”。别等到对方先松手，这段关系值得你主动一次。"
+  },
+  waiting: {
+    name: "蓄力待发型",
+    tag: "有戏，但眼下不是最好的时候。",
+    desc: "他并不讨厌你，甚至有点在意，只是他现在的生活里装不下第二个人——考试、实习、家里的事，随便一样都可能让他退回去。你不需要更用力，只需要别把自己耗干。时机没到的时候，等待也是一种答案。"
+  },
+  bro: {
+    name: "自己人型",
+    tag: "他是真的把你当朋友，暂时没往那想。",
+    desc: "他对你很大方、很自然、很能开玩笑，但那是“兄弟”级别的自然。你们之间没有试探的紧张感，也没有小心翼翼。这不是坏事——很多关系就是从这儿长起来的。如果你想更进一步，得先制造一点“不确定”，而不是继续当那个最安全的人。"
+  },
+  test: {
+    name: "试水型",
+    tag: "他在拿你练手，别太快上头。",
+    desc: "他会撩、会靠近、会说让人误会的话，但你一认真，他就退半步。享受被喜欢的感觉，不等于想要一段关系。你可以陪他玩，但别把自己的情绪押上去。真正的喜欢不会让你猜来猜去，它会有明确的动作。"
+  },
+  oneway: {
+    name: "单向心动型",
+    tag: "你听到的心跳，他那边没接收到。",
+    desc: "你把自己的信号放得很大，可对方的接收器一直是关着的。这不代表你不好，只代表他此刻没在看你。继续加码只会让你更累。把这份力气拿回来一点，先照顾好自己的情绪——喜欢一个人，不该是一场单方面的考试。"
+  },
+  cold: {
+    name: "高冷暗恋型",
+    tag: "他喜欢，但他死要面子。",
+    desc: "他会在你看不见的地方点赞、在你发消息的十分钟内点开、在朋友面前装作不在意。他的喜欢是收敛的、要面子的、怕被看穿的。你如果也端着，这段关系就会一直卡在原地。给他一个不会让他丢脸的台阶，他可能就下来了。"
+  }
+};
+
+/* ============================================================
+   2. 维度：显示在结果页的成分条
+   ============================================================ */
+const DIMS = {
+  response: "回应速度",
+  initiative: "主动程度",
+  emotion: "情绪暴露",
+  boundary: "边界距离"
+};
+
+/* ============================================================
+   3. 题目：每题 4 个选项，s 给类型加分，d 给维度加分
+   ============================================================ */
+const QUESTIONS = [
+  {
+    q: "TA 凌晨两点回你消息，你会怎么想？",
+    o: [
+      { t: "秒回选手，开心到睡不着", s: { both: 2 }, d: { response: 3, emotion: 2 } },
+      { t: "翻来覆去看那几句聊天记录", s: { oneway: 1 }, d: { emotion: 3 } },
+      { t: "估计刚从游戏里出来", s: { bro: 2 }, d: { response: 1 } },
+      { t: "先不回，第二天再说", s: { test: 1 }, d: { boundary: 2 } }
+    ]
+  },
+  {
+    q: "你们聊天，一般谁先结尾？",
+    o: [
+      { t: "他，每次都要回个表情收尾", s: { both: 2 }, d: { initiative: 2, emotion: 1 } },
+      { t: "我，我说完就撤", s: { oneway: 1 }, d: { initiative: 1 } },
+      { t: "聊着聊着就断了，谁也没在意", s: { bro: 2 }, d: {} },
+      { t: "看心情，有时候他有时候我", s: { waiting: 1 }, d: { response: 1 } }
+    ]
+  },
+  {
+    q: "TA 发朋友圈，你大概多久点赞？",
+    o: [
+      { t: "秒赞，但是不敢留言", s: { oneway: 2 }, d: { emotion: 2 } },
+      { t: "过一会儿再点，装作刚刷到", s: { cold: 2 }, d: { boundary: 1 } },
+      { t: "想起来才点，不太在意", s: { bro: 1 }, d: {} },
+      { t: "他发什么我都点，他也不觉得奇怪", s: { both: 1 }, d: { response: 1 } }
+    ]
+  },
+  {
+    q: "TA 约你吃饭，理由通常是？",
+    o: [
+      { t: "正好顺路 / 顺便", s: { bro: 2 }, d: {} },
+      { t: "那家店是你上次随口提过的", s: { both: 3 }, d: { emotion: 1 } },
+      { t: "说“朋友们都在”，结果就你们俩", s: { test: 2 }, d: { initiative: 1 } },
+      { t: "他从来不主动约", s: { oneway: 1 }, d: { boundary: 1 } }
+    ]
+  },
+  {
+    q: "朋友起哄说你们在一起，TA 什么反应？",
+    o: [
+      { t: "笑而不语，不否认", s: { both: 2 }, d: { boundary: 1 } },
+      { t: "赶紧解释，但解释的时候看了你一眼", s: { cold: 2 }, d: { emotion: 2 } },
+      { t: "跟着一起笑，转头就忘了", s: { test: 1, bro: 1 }, d: {} },
+      { t: "立刻否认，还很坚决", s: { oneway: 2 }, d: { boundary: 2 } }
+    ]
+  },
+  {
+    q: "你们合照，TA 站得离你多近？",
+    o: [
+      { t: "肩膀贴着肩膀，没什么距离感", s: { both: 2 }, d: { boundary: 1 } },
+      { t: "会刻意留一点空隙", s: { cold: 1 }, d: { boundary: 2 } },
+      { t: "站哪算哪，没注意", s: { bro: 2 }, d: {} },
+      { t: "人多的时候会挡在你那一侧", s: { both: 1 }, d: { initiative: 1, emotion: 1 } }
+    ]
+  },
+  {
+    q: "你发了一条 emo 状态，TA 的反应？",
+    o: [
+      { t: "私聊问你怎么了", s: { both: 2 }, d: { emotion: 3 } },
+      { t: "只点了个赞，什么都没说", s: { cold: 1 }, d: { emotion: 1 } },
+      { t: "在群里艾特你说点别的", s: { test: 1, bro: 1 }, d: {} },
+      { t: "好像完全没看见", s: { oneway: 1 }, d: { boundary: 1 } }
+    ]
+  },
+  {
+    q: "你们打电话，一般谁先挂？",
+    o: [
+      { t: "他等你先挂", s: { both: 2 }, d: { emotion: 2 } },
+      { t: "说完正事就挂了，很干脆", s: { bro: 2 }, d: {} },
+      { t: "聊到没话了也不挂", s: { waiting: 2 }, d: { emotion: 1 } },
+      { t: "基本上没打过电话", s: { oneway: 1 }, d: { boundary: 1 } }
+    ]
+  },
+  {
+    q: "TA 提过几次“你的以后”？",
+    o: [
+      { t: "说过“以后带你去”这种话", s: { both: 3 }, d: { initiative: 2 } },
+      { t: "聊过一次，之后再没提", s: { waiting: 2 }, d: {} },
+      { t: "从来没提过", s: { oneway: 2 }, d: { boundary: 1 } },
+      { t: "说过“你以后别找我这样的”", s: { test: 2 }, d: { boundary: 1 } }
+    ]
+  },
+  {
+    q: "如果你现在直接问“你是不是喜欢我”，TA 会？",
+    o: [
+      { t: "沉默三秒，然后说“你说呢”", s: { both: 2 }, d: { emotion: 1 } },
+      { t: "笑一下，然后转移话题", s: { cold: 3 }, d: { boundary: 1 } },
+      { t: "很认真地说“我们这样不是挺好的”", s: { bro: 2 }, d: { boundary: 2 } },
+      { t: "回你“你是不是想多了”", s: { oneway: 2 }, d: { boundary: 1 } }
+    ]
+  }
+];
+
+/* ============================================================
+   4. 逻辑
+   ============================================================ */
+
+/* ---------- 后端计数（可选，失败不影响测试） ---------- */
+const SITE_ID = "xindong";
+const API_BASE = "https://quiz-api-pages.pages.dev"; // Cloudflare Pages Functions 后端
+async function reportCount(site, typeId) {
+  if (!API_BASE) return;
+  const el = document.getElementById("rsocial");
+  if (!el) return;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2500);
+    const r = await fetch(`${API_BASE}/api/count`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ site, type: typeId }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    const d = await r.json();
+    if (d && d.ok && d.typeCount > 1) {
+      el.innerHTML = `已经有 <b>${d.typeCount.toLocaleString()}</b> 人和你测出一样的结果`;
+      el.style.display = "block";
+    }
+  } catch (e) {
+    /* 后端不可用时静默 */
+  }
+}
+
+const picked = [];
+const $ = (id) => document.getElementById(id);
+const show = (id) => {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+};
+
+function renderQuestion() {
+  const i = picked.length;
+  const q = QUESTIONS[i];
+  $("qidx").textContent = `第 ${i + 1} / ${QUESTIONS.length} 题`;
+  const pct = Math.round((i / QUESTIONS.length) * 100);
+  $("qpct").textContent = pct + "%";
+  $("bar").style.width = pct + "%";
+  $("qnum").textContent = "Q" + (i + 1);
+  $("qtext").textContent = q.q;
+  const box = $("opts");
+  box.innerHTML = "";
+  q.o.forEach((opt, idx) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = opt.t;
+    b.onclick = () => {
+      b.classList.add("picked");
+      picked.push(idx);
+      setTimeout(() => {
+        if (picked.length < QUESTIONS.length) renderQuestion();
+        else renderResult();
+      }, 170);
+    };
+    box.appendChild(b);
+  });
+}
+
+function renderResult() {
+  const score = {};
+  const dims = {};
+  picked.forEach((idx, qi) => {
+    const opt = QUESTIONS[qi].o[idx];
+    for (const k in opt.s) score[k] = (score[k] || 0) + opt.s[k];
+    for (const k in opt.d) dims[k] = (dims[k] || 0) + opt.d[k];
+  });
+
+  let best = "both", bestScore = -1;
+  const order = ["both", "waiting", "cold", "test", "bro", "oneway"];
+  order.forEach((k) => {
+    const v = score[k] || 0;
+    if (v > bestScore) { bestScore = v; best = k; }
+  });
+  const type = TYPES[best];
+
+  const total = Object.values(score).reduce((a, b) => a + b, 0) || 1;
+  const heat = Math.round(((score.both || 0) * 1 + (score.cold || 0) * 0.75 + (score.waiting || 0) * 0.6 + (score.test || 0) * 0.35) / total * 100);
+  const heatClamped = Math.max(6, Math.min(97, heat));
+
+  $("rname").textContent = type.name;
+  $("rtag").textContent = type.tag;
+  $("rdesc").textContent = type.desc;
+  $("rheat").textContent = heatClamped;
+
+  const maxDim = { response: 6, initiative: 5, emotion: 8, boundary: 7 };
+  $("rbars").innerHTML = "";
+  Object.keys(DIMS).forEach((k) => {
+    const v = dims[k] || 0;
+    const p = Math.max(8, Math.min(98, Math.round((v / maxDim[k]) * 100)));
+    const row = document.createElement("div");
+    row.className = "bar";
+    row.innerHTML = `<div class="row"><span>${DIMS[k]}</span><span>${p}%</span></div><div class="bg"><i style="width:0"></i></div>`;
+    $("rbars").appendChild(row);
+    requestAnimationFrame(() => setTimeout(() => { row.querySelector("i").style.width = p + "%"; }, 60));
+  });
+
+  $("bar").style.width = "100%";
+  $("qpct").textContent = "100%";
+  show("s-result");
+
+  window.__shareText = `我测出来是「${type.name}」——${type.tag} 你是什么？`;
+  reportCount(SITE_ID, best);
+}
+
+$("start").onclick = () => {
+  picked.length = 0;
+  $("bar").style.width = "0%";
+  renderQuestion();
+  show("s-quiz");
+};
+
+$("again").onclick = () => {
+  picked.length = 0;
+  show("s-cover");
+};
+
+$("share").onclick = async () => {
+  const text = window.__shareText || document.title;
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("已复制，去发给朋友吧");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+    toast("已复制，去发给朋友吧");
+  }
+};
+
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 1600);
+}
+</script>
+</body>
+</html>
